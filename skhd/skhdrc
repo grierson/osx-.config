@@ -1,9 +1,16 @@
-# Basics
+# Try to replicate i3wm
+
+# Open term
 cmd - return : kitty -d ~
+
+# Move focus to windows
 cmd - left : yabai -m window --focus west
 cmd - right : yabai -m window --focus east
 cmd - up : yabai -m window --focus north
 cmd - down : yabai -m window --focus south
+
+# Close window
+# cmd - d : Mapped to open Alfred
 cmd + shift - q : yabai -m window --close
 
 # Modifying windows
@@ -13,7 +20,7 @@ cmd - f : yabai -m window --toggle zoom-fullscreen
 cmd + shift - space : yabai -m window --toggle float;\
 			yabai -m window --grid 4:4:1:1:2:2
 
-# Workspaces
+# Focus Workspaces
 cmd - n : yabai -m space --create
 cmd - 1 : yabai -m space --focus 1
 cmd - 2 : yabai -m space --focus 2
