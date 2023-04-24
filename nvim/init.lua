@@ -79,23 +79,22 @@ require("lazy").setup({
 	"PaterJason/cmp-conjure",
 	{
 		'VonHeikemen/lsp-zero.nvim',
+		branch = 'v2.x',
 		dependencies = {
 			-- LSP Support
 			{ 'neovim/nvim-lspconfig' },
-			{ 'williamboman/mason.nvim' },
+			{
+				'williamboman/mason.nvim',
+				build = function()
+					pcall(vim.cmd, 'MasonUpdate')
+				end,
+			},
 			{ 'williamboman/mason-lspconfig.nvim' },
 
 			-- Autocompletion
 			{ 'hrsh7th/nvim-cmp' },
 			{ 'hrsh7th/cmp-nvim-lsp' },
-			{ 'hrsh7th/cmp-buffer' },
-			{ 'hrsh7th/cmp-path' },
-			{ 'saadparwaiz1/cmp_luasnip' },
-			{ 'hrsh7th/cmp-nvim-lua' },
-
-			-- Snippets
 			{ 'L3MON4D3/LuaSnip' },
-			{ 'rafamadriz/friendly-snippets' },
 
 			-- Progress bar
 			{ "j-hui/fidget.nvim" },
@@ -104,7 +103,6 @@ require("lazy").setup({
 })
 
 vim.cmd [[colorscheme alabaster]]
-
 
 -- Options
 require('mini.basics').setup()
@@ -143,12 +141,7 @@ require('gitsigns').setup()      -- Git
 require("neodev").setup()        -- Plugin dev
 
 -- LSP + Complete
-local lsp = require('lsp-zero').preset({
-	name = 'recommended',
-	set_lsp_keymaps = {
-		preserve_mappings = false,
-	}
-})
+local lsp = require('lsp-zero').preset({})
 
 lsp.ensure_installed({
 	"lua_ls",
@@ -160,20 +153,35 @@ lsp.ensure_installed({
 	"marksman",
 })
 
-lsp.setup_nvim_cmp({
+lsp.on_attach(function(_, bufnr)
+	local opts = { buffer = bufnr, remap = false }
+
+	vim.keymap.set("n", "gd", function() vim.lsp.buf.definition() end, opts)
+	vim.keymap.set("n", "K", function() vim.lsp.buf.hover() end, opts)
+	vim.keymap.set("n", "[d", function() vim.diagnostic.goto_next() end, opts)
+	vim.keymap.set("n", "]d", function() vim.diagnostic.goto_prev() end, opts)
+end)
+
+lsp.setup()
+
+local cmp = require("cmp")
+require("luasnip.loaders.from_vscode").lazy_load()
+
+cmp.setup({
 	sources = {
-		{ name = 'path' },
+		{ name = "path" },
+		{ name = "nvim_lsp" },
 		{ name = 'conjure' },
-		{ name = 'nvim_lsp' },
-		{ name = 'buffer',  keyword_length = 3 },
-		{ name = 'luasnip', keyword_length = 2 },
+		{ name = "buffer",  keyword_length = 3 },
+		{ name = "luasnip", keyword_length = 2 },
+	},
+	mapping = {
+		['<CR>'] = cmp.mapping.confirm({ select = false }),
 	}
 })
 
-lsp.nvim_workspace()
-lsp.setup()
-
 local null_ls = require("null-ls")
+
 null_ls.setup({
 	sources = {
 		null_ls.builtins.formatting.fnlfmt,
