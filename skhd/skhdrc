@@ -1,5 +1,8 @@
 # Try to replicate i3wm
 
+# Restart yabai
+cmd + shift - r : yabai --restart-service
+
 # Open term
 cmd - return : kitty -d ~
 cmd - space : open -a "Google Chrome"
