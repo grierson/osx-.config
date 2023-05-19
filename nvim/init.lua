@@ -22,14 +22,12 @@ require("lazy").setup({
 	}, -- own harpoon
 	-- "grierson/fenpoon", -- Marks
 
-	"nvim-lua/plenary.nvim",  -- Lots of packages use as dep
-	"echasnovski/mini.nvim",  -- comments, pair, surround, statusline, leap
-	"debugloop/telescope-undo.nvim", -- Undo
-	"folke/which-key.nvim",   -- Keymap
-	"AckslD/nvim-neoclip.lua", -- Clipboard
+	"nvim-lua/plenary.nvim", -- Lots of packages use as dep
+	"echasnovski/mini.nvim", -- comments, pair, surround, statusline, leap
+	"folke/which-key.nvim", -- Keymap
 
 	"folke/todo-comments.nvim", -- TODO: comments
-	"tpope/vim-abolish",      -- Subvert (Search and replace)
+	"tpope/vim-abolish", -- Subvert (Search and replace)
 
 	-- Clojure
 	"Olical/conjure",                      -- REPL
@@ -136,7 +134,6 @@ vim.opt.laststatus = 3
 require("neo-tree").setup()      -- Project tree
 require("todo-comments").setup() -- Highlight TODO: comments
 require("fidget").setup()        -- Progress bar
-require('neoclip').setup()       -- Easy register
 require('gitsigns').setup()      -- Git
 require("neodev").setup()        -- Plugin dev
 
@@ -249,10 +246,7 @@ telescope.setup({
 	}
 })
 telescope.load_extension('fzf')
-telescope.load_extension('neoclip')
--- telescope.load_extension('harpoon')
 telescope.load_extension('fenpoon')
-telescope.load_extension("undo")
 
 -- Plugin dev
 local ok, plenary_reload = pcall(require, "plenary.reload")
@@ -319,13 +313,9 @@ whichKey.register({
 		},
 		-- Buffers
 		b = { "<cmd>Telescope buffers theme=dropdown ignore_current_buffer=true previewer=false<cr>", "Buffer" },
-		-- Clipboard
-		c = { "<cmd>Telescope neoclip<cr>", "Clipboard" },
 		-- Project tree
 		t = { "<cmd>NeoTreeFocus<cr>", "Focus tree" },
 		T = { "<cmd>NeoTreeShowToggle<cr>", "Toggle tree" },
-		-- Undo
-		u = { "<cmd>Telescope undo<cr>", "Undo" },
 		-- Quickfix
 		q = { "<cmd>:copen<cr>", "Focus quickfix" },
 		Q = { "<cmd>:cclose<cr>", "Toggle quickfix" },
