@@ -294,7 +294,7 @@ whichKey.register({
 			d = { "<cmd>Telescope diagnostic<cr>", "Diagnostics" },
 			n = { "<cmd>TodoTelescope<cr>", "Note" },
 			r = { "<cmd>Telescope resume<cr>", "Resume" },
-			q = { "<cmd>Telescope quickfix<cr>", "Resume" },
+			q = { "<cmd>Telescope quickfix<cr>", "Quickfix" },
 		},
 		l = {
 			name = "+LSP",
@@ -302,14 +302,13 @@ whichKey.register({
 			f = { "<cmd>lua vim.lsp.buf.format()<cr>", "Format" },
 			r = { "<cmd>lua vim.lsp.buf.rename()<cr>", "Rename" },
 			s = { "<cmd>Telescope lsp_document_symbols symbols=function,variable<cr>", "Symbol" },
-			d = { "<cmd>lua vim.diagnostic.setqflist()<cr>", "Diagnostic" },
+			d = { "<cmd>Telescope diagnostics<cr>", "Diagnostic" },
 		},
 		h = {
 			name = "+hunk",
 			s = { "<cmd>Gitsigns stage_hunk<cr>", "Stage" },
 			r = { "<cmd>Gitsigns reset_hunk<cr>", "Reset" },
 			p = { "<cmd>Gitsigns preview_hunk<cr>", "Preview" },
-			q = { "<cmd>Gitsigns setqflist<cr>", "Quickfix" },
 		},
 		-- Buffers
 		b = { "<cmd>Telescope buffers theme=dropdown ignore_current_buffer=true previewer=false<cr>", "Buffer" },
@@ -319,8 +318,11 @@ whichKey.register({
 		-- Quickfix
 		q = { "<cmd>:copen<cr>", "Focus quickfix" },
 		Q = { "<cmd>:cclose<cr>", "Toggle quickfix" },
-		-- Marks (Fenpoon)
-		m = { "<cmd>Telescope fenpoon<cr>", "Marks" },
-		M = { "<cmd>:lua require('fenpoon.api').mark()<cr>", "Mark file" },
+		-- Registers
+		r = { "<cmd>Telescope registers<cr>", "Registers" },
+		-- Marks + Fenpoon
+		n = { "<cmd>Telescope fenpoon<cr>", "Harpoon" },
+		N = { "<cmd>:lua require('fenpoon.api').mark()<cr>", "Harpoon file" },
+		m = { "<cmd>Telescope marks<cr>", "Marks" },
 	}
 })
