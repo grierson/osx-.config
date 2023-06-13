@@ -25,6 +25,7 @@ require("lazy").setup({
 	"nvim-lua/plenary.nvim", -- Lots of packages use as dep
 	"echasnovski/mini.nvim", -- comments, pair, surround, statusline, leap
 	"folke/which-key.nvim", -- Keymap
+	"tpope/vim-sleuth",  -- Indent
 
 	"folke/todo-comments.nvim", -- TODO: comments
 	"tpope/vim-abolish", -- Subvert (Search and replace)
@@ -45,6 +46,29 @@ require("lazy").setup({
 		"iamcco/markdown-preview.nvim",
 		ft = "markdown",
 		build = ":call mkdp#util#install()",
+	},
+
+	{
+		"nvim-neorg/neorg",
+		build = ":Neorg sync-parsers",
+		dependencies = { "nvim-lua/plenary.nvim" },
+		run = ":Neorg sync-parsers", -- This is the important bit!
+		config = function()
+			require("neorg").setup {
+				load = {
+					["core.defaults"] = {}, -- Loads default behaviour
+					["core.concealer"] = {}, -- Adds pretty icons to your documents
+					["core.concealer"] = {}, -- Adds pretty icons to your documents
+					["core.dirman"] = { -- Manages Neorg workspaces
+						config = {
+							workspaces = {
+								notes = "~/notes",
+							},
+						},
+					},
+				},
+			}
+		end,
 	},
 
 	-- Search
@@ -95,7 +119,10 @@ require("lazy").setup({
 			{ 'L3MON4D3/LuaSnip' },
 
 			-- Progress bar
-			{ "j-hui/fidget.nvim" },
+			{
+				"j-hui/fidget.nvim",
+				tag = 'legacy'
+			},
 		}
 	},
 })
