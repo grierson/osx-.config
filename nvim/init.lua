@@ -37,6 +37,9 @@ require("lazy").setup({
 	"Olical/aniseed",                      -- Fennel
 	"folke/neodev.nvim",                   -- Plugin dev
 
+	-- C
+	"NoahTheDuke/vim-just",
+
 	-- Git
 	"tpope/vim-fugitive", -- Git manager
 	"lewis6991/gitsigns.nvim", -- Git gutter + hunks
@@ -46,29 +49,6 @@ require("lazy").setup({
 		"iamcco/markdown-preview.nvim",
 		ft = "markdown",
 		build = ":call mkdp#util#install()",
-	},
-
-	{
-		"nvim-neorg/neorg",
-		build = ":Neorg sync-parsers",
-		dependencies = { "nvim-lua/plenary.nvim" },
-		run = ":Neorg sync-parsers", -- This is the important bit!
-		config = function()
-			require("neorg").setup {
-				load = {
-					["core.defaults"] = {}, -- Loads default behaviour
-					["core.concealer"] = {}, -- Adds pretty icons to your documents
-					["core.concealer"] = {}, -- Adds pretty icons to your documents
-					["core.dirman"] = { -- Manages Neorg workspaces
-						config = {
-							workspaces = {
-								notes = "~/notes",
-							},
-						},
-					},
-				},
-			}
-		end,
 	},
 
 	-- Search
@@ -161,13 +141,13 @@ vim.opt.laststatus = 3
 require("neo-tree").setup()      -- Project tree
 require("todo-comments").setup() -- Highlight TODO: comments
 require("fidget").setup()        -- Progress bar
-require('gitsigns').setup()      -- Git
+require("gitsigns").setup()      -- Git
 require("neodev").setup()        -- Plugin dev
 
 -- LSP + Complete
 local lsp = require('lsp-zero').preset({})
 
-lsp.on_attach(function(client, bufnr)
+lsp.on_attach(function(_, bufnr)
 	lsp.default_keymaps({
 		buffer = bufnr,
 		preserve_mappings = false
@@ -178,6 +158,7 @@ end)
 lsp.ensure_installed({
 	"lua_ls",
 	"clojure_lsp",
+	"clangd",
 	"dockerls",
 	"docker_compose_language_service",
 	"terraformls",
@@ -209,7 +190,6 @@ local null_ls = require("null-ls")
 
 null_ls.setup({
 	sources = {
-		null_ls.builtins.formatting.fnlfmt,
 		null_ls.builtins.formatting.markdownlint,
 		null_ls.builtins.diagnostics.markdownlint,
 	},
