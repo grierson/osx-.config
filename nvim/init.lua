@@ -202,6 +202,7 @@ require("nvim-treesitter.configs").setup({
 		"lua",
 		"clojure",
 		"fennel",
+		"c",
 		"yaml",
 		"json",
 		"terraform",
@@ -275,6 +276,7 @@ R = function(name)
 	RELOAD(name)
 	return require(name)
 end
+-- Plugin dev
 
 local whichKey = require("which-key")
 whichKey.register({
