@@ -307,7 +307,7 @@ whichKey.register({
 	["<leader>"] = {
 		w = {
 			name = "+workspace",
-			f = { "<cmd>NeoTreeReveal<cr>", "File" },
+			f = { "<cmd>Neotree reveal<cr>", "File" },
 			s = { "<cmd>Telescope lsp_workspace_symbols symbols=function,variable<cr>", "Symbol" },
 		},
 		s = {
@@ -338,8 +338,8 @@ whichKey.register({
 		-- Buffers
 		b = { "<cmd>Telescope buffers theme=dropdown ignore_current_buffer=true previewer=false<cr>", "Buffer" },
 		-- Project tree
-		t = { "<cmd>NeoTreeFocus<cr>", "Focus tree" },
-		T = { "<cmd>NeoTreeShowToggle<cr>", "Toggle tree" },
+		t = { "<cmd>Neotree focus<cr>", "Focus tree" },
+		T = { "<cmd>Neotree toggle<cr>", "Toggle tree" },
 		-- Quickfix
 		q = { "<cmd>:copen<cr>", "Focus quickfix" },
 		Q = { "<cmd>:cclose<cr>", "Toggle quickfix" },
