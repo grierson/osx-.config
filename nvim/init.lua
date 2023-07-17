@@ -86,9 +86,11 @@ require("lazy").setup({
 	-- Project tree
 	{
 		"nvim-neo-tree/neo-tree.nvim",
+		branch = "v3.x",
 		dependencies = {
+			"nvim-lua/plenary.nvim",
+			"nvim-tree/nvim-web-devicons", -- not strictly required, but recommended
 			"MunifTanjim/nui.nvim",
-			"nvim-tree/nvim-web-devicons",
 		}
 	},
 
@@ -101,7 +103,6 @@ require("lazy").setup({
 	}, -- Better highlighting
 
 	-- LSP + Autocomplete
-	"jose-elias-alvarez/null-ls.nvim",
 	"PaterJason/cmp-conjure",
 	{
 		'VonHeikemen/lsp-zero.nvim',
@@ -208,15 +209,6 @@ cmp.setup({
 	mapping = {
 		['<CR>'] = cmp.mapping.confirm({ select = false }),
 	}
-})
-
-local null_ls = require("null-ls")
-
-null_ls.setup({
-	sources = {
-		null_ls.builtins.formatting.markdownlint,
-		null_ls.builtins.diagnostics.markdownlint,
-	},
 })
 
 -- Rainbow parens
