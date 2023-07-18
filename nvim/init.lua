@@ -34,7 +34,6 @@ require("lazy").setup({
 	"Olical/conjure",                      -- REPL
 	"guns/vim-sexp",                       -- Add form and element text objects
 	"tpope/vim-sexp-mappings-for-regular-people", -- Better sexp
-	"Olical/aniseed",                      -- Fennel
 	{ "Olical/nfnl", ft = "fennel" },
 	"jose-elias-alvarez/null-ls.nvim",
 	"folke/neodev.nvim", -- Plugin dev
@@ -141,7 +140,7 @@ require('mini.basics').setup()
 vim.opt.clipboard = "unnamedplus"
 vim.opt.relativenumber = true
 vim.opt.colorcolumn = "80"
-vim.g.sexp_filetypes = "clojure,fennel"
+vim.g.sexp_filetypes = "clojure,fennel,fnl"
 
 -- Plugins
 require('mini.trailspace').setup() -- Trailing space
