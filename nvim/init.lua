@@ -16,10 +16,10 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup({
-	{
-		dir = "~/projects/fenpoon/",
-		dev = true
-	}, -- own harpoon
+	-- {
+	-- 	dir = "~/projects/fenpoon/",
+	-- 	dev = true
+	-- }, -- own harpoon
 	-- "grierson/fenpoon", -- Marks
 
 	"nvim-lua/plenary.nvim", -- Lots of packages use as dep
@@ -35,7 +35,9 @@ require("lazy").setup({
 	"guns/vim-sexp",                       -- Add form and element text objects
 	"tpope/vim-sexp-mappings-for-regular-people", -- Better sexp
 	"Olical/aniseed",                      -- Fennel
-	"folke/neodev.nvim",                   -- Plugin dev
+	{ "Olical/nfnl", ft = "fennel" },
+	"jose-elias-alvarez/null-ls.nvim",
+	"folke/neodev.nvim", -- Plugin dev
 
 	-- C
 	"NoahTheDuke/vim-just",
@@ -169,6 +171,16 @@ require("fidget").setup()        -- Progress bar
 require("gitsigns").setup()      -- Git
 require("neodev").setup()        -- Plugin dev
 
+local null_ls = require("null-ls")
+
+null_ls.setup({
+	sources = {
+		null_ls.builtins.formatting.fnlfmt,
+		null_ls.builtins.formatting.mdformat,
+		null_ls.builtins.diagnostics.markuplint
+	},
+})
+
 -- LSP + Complete
 local lsp = require('lsp-zero').preset({})
 
@@ -270,7 +282,7 @@ telescope.setup({
 	}
 })
 telescope.load_extension('fzf')
-telescope.load_extension('fenpoon')
+-- telescope.load_extension('fenpoon')
 
 -- Plugin dev
 local ok, plenary_reload = pcall(require, "plenary.reload")
