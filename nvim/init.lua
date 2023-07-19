@@ -18,11 +18,12 @@ vim.opt.rtp:prepend(lazypath)
 require("lazy").setup({
 	-- {
 	-- 	dir = "~/projects/fenpoon/",
-	-- 	dev = true
+	-- 	dev = true,
 	-- }, -- own harpoon
 	-- "grierson/fenpoon", -- Marks
 
 	"nvim-lua/plenary.nvim", -- Lots of packages use as dep
+	{ "Olical/nfnl", ft = "fennel" },
 	"echasnovski/mini.nvim", -- comments, pair, surround, statusline, leap
 	"folke/which-key.nvim", -- Keymap
 	"tpope/vim-sleuth",  -- Indent
@@ -34,9 +35,8 @@ require("lazy").setup({
 	"Olical/conjure",                      -- REPL
 	"guns/vim-sexp",                       -- Add form and element text objects
 	"tpope/vim-sexp-mappings-for-regular-people", -- Better sexp
-	{ "Olical/nfnl", ft = "fennel" },
 	"jose-elias-alvarez/null-ls.nvim",
-	"folke/neodev.nvim", -- Plugin dev
+	"folke/neodev.nvim",                   -- Plugin dev
 
 	-- C
 	"NoahTheDuke/vim-just",
