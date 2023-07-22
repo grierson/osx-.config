@@ -16,10 +16,10 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup({
-	-- {
-	-- 	dir = "~/projects/fenpoon/",
-	-- 	dev = true,
-	-- }, -- own harpoon
+	{
+		dir = "~/projects/fenpoon/",
+		dev = true,
+	}, -- own harpoon
 	-- "grierson/fenpoon", -- Marks
 
 	"nvim-lua/plenary.nvim", -- Lots of packages use as dep
@@ -175,8 +175,8 @@ local null_ls = require("null-ls")
 null_ls.setup({
 	sources = {
 		null_ls.builtins.formatting.fnlfmt,
-		null_ls.builtins.formatting.mdformat,
-		null_ls.builtins.diagnostics.markuplint
+		null_ls.builtins.formatting.prettier,
+		null_ls.builtins.diagnostics.markdownlint
 	},
 })
 
@@ -281,7 +281,7 @@ telescope.setup({
 	}
 })
 telescope.load_extension('fzf')
--- telescope.load_extension('fenpoon')
+telescope.load_extension('fenpoon')
 
 -- Plugin dev
 local ok, plenary_reload = pcall(require, "plenary.reload")
