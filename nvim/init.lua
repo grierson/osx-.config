@@ -263,6 +263,7 @@ telescope.setup({
 })
 telescope.load_extension('fzf')
 telescope.load_extension('fenpoon')
+telescope.load_extension("yank_history")
 
 -- Plugin dev
 local ok, plenary_reload = pcall(require, "plenary.reload")
@@ -336,6 +337,15 @@ nmap_leader("r", "<cmd>Telescope registers<cr>", "Registers")
 nmap_leader("n", "<cmd>Telescope fenpoon<cr>", "Harpoon")
 nmap_leader("N", "<cmd>:lua require('fenpoon.api').mark()<cr>", "Harpoon file")
 nmap_leader("m", "<cmd>Telescope marks<cr>", "Marks")
+
+-- Yanky
+nmap_leader('p', '<cmd>Telescope yank_history<cr>', 'Paste')
+vim.keymap.set({ "n", "x" }, "p", "<Plug>(YankyPutAfter)")
+vim.keymap.set({ "n", "x" }, "P", "<Plug>(YankyPutBefore)")
+vim.keymap.set({ "n", "x" }, "gp", "<Plug>(YankyGPutAfter)")
+vim.keymap.set({ "n", "x" }, "gP", "<Plug>(YankyGPutBefore)")
+vim.keymap.set("n", "<c-n>", "<Plug>(YankyCycleForward)")
+vim.keymap.set("n", "<c-p>", "<Plug>(YankyCycleBackward)")
 
 local miniclue = require('mini.clue')
 miniclue.setup({
