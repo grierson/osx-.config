@@ -24,19 +24,23 @@ require("lazy").setup({
 
 	"nvim-lua/plenary.nvim", -- Lots of packages use as dep
 	{ "Olical/nfnl", ft = "fennel" },
-	"echasnovski/mini.nvim", -- comments, pair, surround, statusline, leap
-	"folke/which-key.nvim", -- Keymap
+	"echasnovski/mini.nvim", -- comments, pair, surround, statusline, leap, WhichKey
 	"tpope/vim-sleuth",  -- Indent
 
-	"folke/todo-comments.nvim", -- TODO: comments
+	"folke/todo-comments.nvim", -- TODO comments
 	"tpope/vim-abolish", -- Subvert (Search and replace)
+	"gbprod/yanky.nvim", -- Yank
 
 	-- Clojure
 	"Olical/conjure",                      -- REPL
 	"guns/vim-sexp",                       -- Add form and element text objects
 	"tpope/vim-sexp-mappings-for-regular-people", -- Better sexp
-	"jose-elias-alvarez/null-ls.nvim",
-	"folke/neodev.nvim",                   -- Plugin dev
+
+	-- Fennel
+	"jose-elias-alvarez/null-ls.nvim", -- fnlfmt, mdfmt
+
+	-- Plugin dev
+	"folke/neodev.nvim",
 
 	-- C
 	"NoahTheDuke/vim-just",
@@ -95,13 +99,11 @@ require("lazy").setup({
 		}
 	},
 
-	-- Colorscheme
+	-- Colorscheme + Hightlighting
 	"p00f/alabaster.nvim", -- Theme
-	"HiPhish/nvim-ts-rainbow2", -- Rainbow parens 2
-	{
-		"nvim-treesitter/nvim-treesitter",
-		build = ":TSUpdate",
-	}, -- Better highlighting
+	'nvim-treesitter/nvim-treesitter',
+	'nvim-treesitter/playground',
+	"HiPhish/nvim-ts-rainbow2", -- Rainbow parens
 
 	-- LSP + Autocomplete
 	"PaterJason/cmp-conjure",
@@ -171,6 +173,7 @@ require("todo-comments").setup() -- Highlight TODO: comments
 require("fidget").setup()        -- Progress bar
 require("gitsigns").setup()      -- Git
 require("neodev").setup()        -- Plugin dev
+require("yanky").setup()         -- Better yank registers
 
 local null_ls = require("null-ls")
 
@@ -307,60 +310,109 @@ R = function(name)
 end
 -- Plugin dev
 
-local whichKey = require("which-key")
-whichKey.register({
-	["["] = {
-		name = "+prev",
-		h = { "<cmd>Gitsigns prev_hunk<cr>", "Hunk" },
-	},
-	["]"] = {
-		name = "+prev",
-		h = { "<cmd>Gitsigns next_hunk<cr>", "Hunk" },
-	},
-	["<leader>"] = {
-		w = {
-			name = "+workspace",
-			f = { "<cmd>Neotree reveal<cr>", "File" },
-			s = { "<cmd>Telescope lsp_workspace_symbols symbols=function,variable<cr>", "Symbol" },
-		},
-		s = {
-			name = "+search",
-			f = { "<cmd>Telescope find_files<cr>", "File" },
-			h = { "<cmd>Telescope help_tags<cr>", "Help" },
-			w = { "<cmd>Telescope grep_string<cr>", "Word" },
-			g = { "<cmd>Telescope live_grep<cr>", "Grep" },
-			d = { "<cmd>Telescope diagnostic<cr>", "Diagnostics" },
-			n = { "<cmd>TodoTelescope<cr>", "Note" },
-			r = { "<cmd>Telescope resume<cr>", "Resume" },
-			q = { "<cmd>Telescope quickfix<cr>", "Quickfix" },
-		},
-		l = {
-			name = "+LSP",
-			a = { "<cmd>lua vim.lsp.buf.code_action()<cr>", "Action" },
-			f = { "<cmd>lua vim.lsp.buf.format()<cr>", "Format" },
-			r = { "<cmd>lua vim.lsp.buf.rename()<cr>", "Rename" },
-			s = { "<cmd>Telescope lsp_document_symbols symbols=function,variable<cr>", "Symbol" },
-			d = { "<cmd>Telescope diagnostics<cr>", "Diagnostic" },
-		},
-		h = {
-			name = "+hunk",
-			s = { "<cmd>Gitsigns stage_hunk<cr>", "Stage" },
-			r = { "<cmd>Gitsigns reset_hunk<cr>", "Reset" },
-			p = { "<cmd>Gitsigns preview_hunk<cr>", "Preview" },
-		},
-		-- Buffers
-		b = { "<cmd>Telescope buffers theme=dropdown ignore_current_buffer=true previewer=false<cr>", "Buffer" },
-		-- Project tree
-		t = { "<cmd>Neotree focus<cr>", "Focus tree" },
-		T = { "<cmd>Neotree toggle<cr>", "Toggle tree" },
-		-- Quickfix
-		q = { "<cmd>:copen<cr>", "Focus quickfix" },
-		Q = { "<cmd>:cclose<cr>", "Toggle quickfix" },
+local nmap_leader = function(suffix, rhs, desc)
+	vim.keymap.set('n', '<Leader>' .. suffix, rhs, { desc = desc })
+end
+
+-- Project Tree
+nmap_leader('t', '<cmd>Neotree focus<cr>', 'Focus tree')
+nmap_leader('T', '<cmd>Neotree toggle<cr>', 'Toggle tree')
+
+-- LSP
+nmap_leader("la", "<cmd>lua vim.lsp.buf.code_action()<cr>", "Action")
+nmap_leader("lf", "<cmd>lua vim.lsp.buf.format()<cr>", "Format")
+nmap_leader("lr", "<cmd>lua vim.lsp.buf.rename()<cr>", "Rename")
+nmap_leader("ls", "<cmd>Telescope lsp_document_symbols symbols=function,variable<cr>", "Symbol")
+nmap_leader("ld", "<cmd>Telescope diagnostics<cr>", "Diagnostic")
+
+-- LSP workspace
+nmap_leader("wf", "<cmd>Neotree reveal<cr>", "File")
+nmap_leader("ws", "<cmd>Telescope lsp_workspace_symbols symbols=function,variable<cr>", "Symbol")
+
+-- Search
+nmap_leader("sf", "<cmd>Telescope find_files<cr>", "File")
+nmap_leader("sh", "<cmd>Telescope help_tags<cr>", "Help")
+nmap_leader("sw", "<cmd>Telescope grep_string<cr>", "Word")
+nmap_leader("sg", "<cmd>Telescope live_grep<cr>", "Grep")
+nmap_leader("sd", "<cmd>Telescope diagnostic<cr>", "Diagnostics")
+nmap_leader("sn", "<cmd>TodoTelescope<cr>", "Note")
+nmap_leader("sr", "<cmd>Telescope resume<cr>", "Resume")
+nmap_leader("sq", "<cmd>Telescope quickfix<cr>", "Quickfix")
+
+-- Git hunks
+nmap_leader("hs", "<cmd>Gitsigns stage_hunk<cr>", "Stage")
+nmap_leader("hr", "<cmd>Gitsigns reset_hunk<cr>", "Reset")
+nmap_leader("hp", "<cmd>Gitsigns preview_hunk<cr>", "Preview")
+vim.keymap.set('n', '[h', "<cmd>Gitsigns prev_hunk<cr>", { desc = "Hunk" })
+vim.keymap.set('n', ']h', "<cmd>Gitsigns next_hunk<cr>", { desc = "Hunk" })
+
+-- Buffers
+nmap_leader("b", "<cmd>Telescope buffers theme=dropdown ignore_current_buffer=true previewer=false<cr>", "Buffer")
+
+-- Quickfix
+nmap_leader("q", "<cmd>:copen<cr>", "Focus quickfix")
+nmap_leader("Q", "<cmd>:cclose<cr>", "Toggle quickfix")
+
+-- Registers
+nmap_leader("r", "<cmd>Telescope registers<cr>", "Registers")
+
+-- Marks + Fenpoon
+nmap_leader("n", "<cmd>Telescope fenpoon<cr>", "Harpoon")
+nmap_leader("N", "<cmd>:lua require('fenpoon.api').mark()<cr>", "Harpoon file")
+nmap_leader("m", "<cmd>Telescope marks<cr>", "Marks")
+
+local miniclue = require('mini.clue')
+miniclue.setup({
+	triggers = {
+		-- Leader triggers
+		{ mode = 'n', keys = '<Leader>' },
+		{ mode = 'x', keys = '<Leader>' },
+		{ mode = 'n', keys = '<LocalLeader>' },
+
+		-- Built-in completion
+		{ mode = 'i', keys = '<C-x>' },
+
+		-- `g` key
+		{ mode = 'n', keys = 'g' },
+		{ mode = 'x', keys = 'g' },
+
+		-- Marks
+		{ mode = 'n', keys = "'" },
+		{ mode = 'n', keys = '`' },
+		{ mode = 'x', keys = "'" },
+		{ mode = 'x', keys = '`' },
+
 		-- Registers
-		r = { "<cmd>Telescope registers<cr>", "Registers" },
-		-- Marks + Fenpoon
-		n = { "<cmd>Telescope fenpoon<cr>", "Harpoon" },
-		N = { "<cmd>:lua require('fenpoon.api').mark()<cr>", "Harpoon file" },
-		m = { "<cmd>Telescope marks<cr>", "Marks" },
-	}
+		{ mode = 'n', keys = '"' },
+		{ mode = 'x', keys = '"' },
+		{ mode = 'i', keys = '<C-r>' },
+		{ mode = 'c', keys = '<C-r>' },
+
+		-- Window commands
+		{ mode = 'n', keys = '<C-w>' },
+
+		-- `z` key
+		{ mode = 'n', keys = 'z' },
+		{ mode = 'x', keys = 'z' },
+
+		-- `Bracketed` key
+		{ mode = 'n', keys = '[' },
+		{ mode = 'n', keys = ']' },
+		{ mode = 'x', keys = '[' },
+		{ mode = 'x', keys = ']' },
+	},
+
+	clues = {
+		{ mode = 'n', keys = '<Leader>w', desc = '+Buffers' },
+		{ mode = 'n', keys = '<Leader>s', desc = '+Search' },
+		{ mode = 'n', keys = '<Leader>l', desc = '+LSP' },
+		{ mode = 'n', keys = '<Leader>h', desc = '+Hunk' },
+		-- Enhance this by adding descriptions for <Leader> mapping groups
+		miniclue.gen_clues.builtin_completion(),
+		miniclue.gen_clues.g(),
+		miniclue.gen_clues.marks(),
+		miniclue.gen_clues.registers(),
+		miniclue.gen_clues.windows(),
+		miniclue.gen_clues.z(),
+	},
 })
