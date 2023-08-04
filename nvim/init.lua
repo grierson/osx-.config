@@ -20,16 +20,15 @@ require("lazy").setup({
 		dir = "~/projects/fenpoon/",
 		dev = true,
 	}, -- own harpoon
-	-- "grierson/fenpoon", -- Marks
+	-- "grierson/fenpoon", -- Harpoon
 
 	"nvim-lua/plenary.nvim", -- Lots of packages use as dep
-	{ "Olical/nfnl", ft = "fennel" },
 	"echasnovski/mini.nvim", -- comments, pair, surround, statusline, leap, WhichKey
 	"tpope/vim-sleuth",  -- Indent
 
 	"folke/todo-comments.nvim", -- TODO comments
 	"tpope/vim-abolish", -- Subvert (Search and replace)
-	"gbprod/yanky.nvim", -- Yank
+	"gbprod/yanky.nvim", -- Stack yanks
 
 	-- Clojure
 	"Olical/conjure",                      -- REPL
@@ -37,12 +36,11 @@ require("lazy").setup({
 	"tpope/vim-sexp-mappings-for-regular-people", -- Better sexp
 
 	-- Fennel
+	{ "Olical/nfnl", ft = "fennel" }, -- Compile Fennel
 	"jose-elias-alvarez/null-ls.nvim", -- fnlfmt, mdfmt
+	"folke/neodev.nvim",        -- Plugin dev
 
-	-- Plugin dev
-	"folke/neodev.nvim",
-
-	-- C
+	-- Build tool
 	"NoahTheDuke/vim-just",
 
 	-- Git
@@ -59,7 +57,7 @@ require("lazy").setup({
 	-- Search
 	"nvim-telescope/telescope.nvim",
 	{
-		"nvim-telescope/telescope-fzf-native.nvim", -- Better search
+		"nvim-telescope/telescope-fzf-native.nvim", -- Sorting
 		build = "make",
 		lazy = false
 	},
@@ -70,13 +68,16 @@ require("lazy").setup({
 		branch = "v3.x",
 		dependencies = {
 			"nvim-lua/plenary.nvim",
-			"nvim-tree/nvim-web-devicons", -- not strictly required, but recommended
+			"nvim-tree/nvim-web-devicons",
 			"MunifTanjim/nui.nvim",
 		}
 	},
 
 	-- Colorscheme + Hightlighting
-	"p00f/alabaster.nvim", -- Theme
+	{
+		"p00f/alabaster.nvim",
+		lazy = false
+	}, -- Theme
 	'nvim-treesitter/nvim-treesitter',
 	'nvim-treesitter/playground',
 	"HiPhish/nvim-ts-rainbow2", -- Rainbow parens
@@ -89,26 +90,22 @@ require("lazy").setup({
 		dependencies = {
 			-- LSP Support
 			{ 'neovim/nvim-lspconfig' },
-			{
-				'williamboman/mason.nvim',
-				build = function()
-					pcall(vim.cmd, 'MasonUpdate')
-				end,
-			},
+			{ 'williamboman/mason.nvim' },
 			{ 'williamboman/mason-lspconfig.nvim' },
 
 			-- Autocompletion
 			{ 'hrsh7th/nvim-cmp' },
 			{ 'hrsh7th/cmp-nvim-lsp' },
 			{ 'L3MON4D3/LuaSnip' },
-
-			-- Progress bar
-			{
-				"j-hui/fidget.nvim",
-				tag = 'legacy'
-			},
 		}
 	},
+
+	-- Progress bar
+	{
+		"j-hui/fidget.nvim",
+		tag = "legacy",
+		event = "LspAttach",
+	}
 })
 
 vim.o.termguicolors = true
