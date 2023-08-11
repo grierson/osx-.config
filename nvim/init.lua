@@ -171,6 +171,7 @@ end)
 
 lsp.ensure_installed({
 	"lua_ls",
+	"fennel_language_server",
 	"clojure_lsp",
 	"clangd",
 	"dockerls",
