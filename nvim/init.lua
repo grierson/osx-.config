@@ -182,6 +182,15 @@ lsp.ensure_installed({
 })
 
 require('lspconfig').lua_ls.setup(lsp.nvim_lua_ls())
+require('lspconfig').fennel_language_server.setup({
+	settings = {
+		fennel = {
+			diagnostics = {
+				globals = { 'vim' },
+			},
+		},
+	},
+})
 
 lsp.setup()
 
