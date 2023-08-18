@@ -1,5 +1,7 @@
 vim.g.mapleader = " "
 vim.g.maplocalleader = ","
+vim.cmd.filetype("on")
+vim.cmd.filetype("plugin on")
 
 -- Package manager
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
@@ -16,36 +18,43 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup({
+	-- Colorscheme + Hightlighting
+	{
+		"p00f/alabaster.nvim",
+		lazy = false
+	}, -- Theme
+	'nvim-treesitter/nvim-treesitter',
+	'nvim-treesitter/playground',
+	"HiPhish/nvim-ts-rainbow2", -- Rainbow parens
+	{
+		dir = "~/projects/formedit/",
+		dev = true,
+		ft = "clojure",
+		dependencies = {
+			'nvim-treesitter/nvim-treesitter',
+		},
+	}, -- own sexp
+	-- "guns/vim-sexp",                       -- Add form and element text objects
+	-- "tpope/vim-sexp-mappings-for-regular-people", -- Better sexp
+
+	"Olical/conjure",           -- REPL
+	{ "Olical/nfnl", ft = "fennel" }, -- Fennel
+	"nvim-lua/plenary.nvim",    -- Lots of packages use as dep
+	"echasnovski/mini.nvim",    -- comments, pair, surround, statusline, leap, WhichKey
+	"jose-elias-alvarez/null-ls.nvim", -- fnlfmt, mdfmt
+	"folke/neodev.nvim",        -- Plugin dev
+	"NoahTheDuke/vim-just",     -- Build tool
+	"tpope/vim-sleuth",         -- Indent
+	"folke/todo-comments.nvim", -- TODO comments
+	"tpope/vim-abolish",        -- Subvert (Search and replace)
+	"gbprod/yanky.nvim",        -- Stack yanks
+	"tpope/vim-fugitive",       -- Git manager
+	"lewis6991/gitsigns.nvim",  -- Git gutter + hunks
 	{
 		dir = "~/projects/fenpoon/",
 		dev = true,
 	}, -- own harpoon
 	-- "grierson/fenpoon", -- Harpoon
-
-	"nvim-lua/plenary.nvim", -- Lots of packages use as dep
-	"echasnovski/mini.nvim", -- comments, pair, surround, statusline, leap, WhichKey
-	"tpope/vim-sleuth",  -- Indent
-
-	"folke/todo-comments.nvim", -- TODO comments
-	"tpope/vim-abolish", -- Subvert (Search and replace)
-	"gbprod/yanky.nvim", -- Stack yanks
-
-	-- Clojure
-	"Olical/conjure",                      -- REPL
-	"guns/vim-sexp",                       -- Add form and element text objects
-	"tpope/vim-sexp-mappings-for-regular-people", -- Better sexp
-
-	-- Fennel
-	{ "Olical/nfnl", ft = "fennel" }, -- Compile Fennel
-	"jose-elias-alvarez/null-ls.nvim", -- fnlfmt, mdfmt
-	"folke/neodev.nvim",        -- Plugin dev
-
-	-- Build tool
-	"NoahTheDuke/vim-just",
-
-	-- Git
-	"tpope/vim-fugitive", -- Git manager
-	"lewis6991/gitsigns.nvim", -- Git gutter + hunks
 
 	-- Markdown
 	{
@@ -72,15 +81,6 @@ require("lazy").setup({
 			"MunifTanjim/nui.nvim",
 		}
 	},
-
-	-- Colorscheme + Hightlighting
-	{
-		"p00f/alabaster.nvim",
-		lazy = false
-	}, -- Theme
-	'nvim-treesitter/nvim-treesitter',
-	'nvim-treesitter/playground',
-	"HiPhish/nvim-ts-rainbow2", -- Rainbow parens
 
 	-- LSP + Autocomplete
 	"PaterJason/cmp-conjure",
@@ -117,7 +117,7 @@ require('mini.basics').setup()
 vim.opt.clipboard = "unnamedplus"
 vim.opt.relativenumber = true
 vim.opt.colorcolumn = "80"
-vim.g.sexp_filetypes = "clojure,fennel,fnl"
+-- vim.g.sexp_filetypes = "clojure,fennel,fnl"
 
 -- Plugins
 require('mini.trailspace').setup() -- Trailing space
@@ -210,7 +210,6 @@ cmp.setup({
 	}
 })
 
--- Rainbow parens
 require("nvim-treesitter.configs").setup({
 	ensure_installed = {
 		"help",
@@ -240,6 +239,11 @@ require("nvim-treesitter.configs").setup({
 		keymaps = {
 			node_incremental = '<TAB>',
 			node_decremental = '<S-TAB>',
+		},
+	},
+	textobjects = {
+		select = {
+			enable = true,
 		},
 	},
 })
@@ -297,6 +301,20 @@ end
 local nmap_leader = function(suffix, rhs, desc)
 	vim.keymap.set('n', '<Leader>' .. suffix, rhs, { desc = desc })
 end
+
+local formedit = require("formedit")
+vim.keymap.set('o', 'af', formedit.select.form, { desc = "Outer form" })
+vim.keymap.set('o', 'aF', formedit.select.root, { desc = "Outer root form" })
+vim.keymap.set('o', 'if', formedit.select.inner, { desc = "Inner form" })
+vim.keymap.set('o', 'iF', formedit.select["inner-root"], { desc = "Inner root form" })
+vim.keymap.set('n', '<localleader>h', formedit.insertion.head, { desc = "Head insert" })
+vim.keymap.set('n', '<localleader>H', formedit.insertion.tail, { desc = "Tail insert" })
+vim.keymap.set('n', '<localleader>i', formedit.wrap.head, { desc = "Wrap form " })
+vim.keymap.set('n', '<localleader>o', formedit.raise.form, { desc = "Raise form" })
+vim.keymap.set('n', '>)', formedit.slurp.forward, { desc = "Slurp forward" })
+vim.keymap.set('n', '<(', formedit.slurp.backward, { desc = "Slurp backward" })
+vim.keymap.set('n', '>(', formedit.barf.backward, { desc = "Barf backward" })
+vim.keymap.set('n', '<)', formedit.barf.forward, { desc = "Barf forward" })
 
 -- Project Tree
 nmap_leader('t', '<cmd>Neotree focus<cr>', 'Focus tree')
