@@ -18,14 +18,7 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup({
-	-- Colorscheme + Hightlighting
-	{
-		"p00f/alabaster.nvim",
-		lazy = false
-	}, -- Theme
-	'nvim-treesitter/nvim-treesitter',
-	'nvim-treesitter/playground',
-	"HiPhish/nvim-ts-rainbow2", -- Rainbow parens
+	-- Own vim-sexp
 	{
 		dir = "~/projects/formedit/",
 		dev = true,
@@ -33,28 +26,27 @@ require("lazy").setup({
 		dependencies = {
 			'nvim-treesitter/nvim-treesitter',
 		},
-	}, -- own sexp
-	-- "guns/vim-sexp",                       -- Add form and element text objects
-	-- "tpope/vim-sexp-mappings-for-regular-people", -- Better sexp
-
-	"Olical/conjure",           -- REPL
-	{ "Olical/nfnl", ft = "fennel" }, -- Fennel
-	"nvim-lua/plenary.nvim",    -- Lots of packages use as dep
-	"echasnovski/mini.nvim",    -- comments, pair, surround, statusline, leap, WhichKey
-	"jose-elias-alvarez/null-ls.nvim", -- fnlfmt, mdfmt
-	"folke/neodev.nvim",        -- Plugin dev
-	"NoahTheDuke/vim-just",     -- Build tool
-	"tpope/vim-sleuth",         -- Indent
-	"folke/todo-comments.nvim", -- TODO comments
-	"tpope/vim-abolish",        -- Subvert (Search and replace)
-	"gbprod/yanky.nvim",        -- Stack yanks
-	"tpope/vim-fugitive",       -- Git manager
-	"lewis6991/gitsigns.nvim",  -- Git gutter + hunks
+	},
+	-- Own Harpoon
 	{
 		dir = "~/projects/fenpoon/",
 		dev = true,
-	}, -- own harpoon
-	-- "grierson/fenpoon", -- Harpoon
+	},
+
+	"p00f/alabaster.nvim",      -- Theme
+	'nvim-treesitter/nvim-treesitter', -- AST
+	'nvim-treesitter/playground', -- View Treesitter AST
+	"HiPhish/nvim-ts-rainbow2", -- Rainbow parens
+	"Olical/conjure",           -- REPL
+	{ "Olical/nfnl", ft = "fennel" }, -- Fennel development
+	"nvim-lua/plenary.nvim",    -- Lots of packages use as dep
+	"echasnovski/mini.nvim",    -- comments, pair, surround, statusline, leap, whichKey
+	"jose-elias-alvarez/null-ls.nvim", -- fnlfmt, mdfmt
+	"NoahTheDuke/vim-just",     -- Build tool
+	"tpope/vim-sleuth",         -- Indent
+	"folke/todo-comments.nvim", -- TODO comments
+	"tpope/vim-fugitive",       -- Git manager
+	"lewis6991/gitsigns.nvim",  -- Git gutter + hunks
 
 	-- Markdown
 	{
@@ -117,7 +109,6 @@ require('mini.basics').setup()
 vim.opt.clipboard = "unnamedplus"
 vim.opt.relativenumber = true
 vim.opt.colorcolumn = "80"
--- vim.g.sexp_filetypes = "clojure,fennel,fnl"
 
 -- Plugins
 require('mini.trailspace').setup() -- Trailing space
@@ -144,9 +135,7 @@ vim.opt.laststatus = 3
 require("neo-tree").setup()      -- Project tree
 require("todo-comments").setup() -- Highlight TODO: comments
 require("fidget").setup()        -- Progress bar
-require("gitsigns").setup()      -- Git
-require("neodev").setup()        -- Plugin dev
-require("yanky").setup()         -- Better yank registers
+require("gitsigns").setup({})    -- Git
 
 local null_ls = require("null-ls")
 
@@ -240,12 +229,7 @@ require("nvim-treesitter.configs").setup({
 			node_incremental = '<TAB>',
 			node_decremental = '<S-TAB>',
 		},
-	},
-	textobjects = {
-		select = {
-			enable = true,
-		},
-	},
+	}
 })
 
 local telescope = require("telescope")
@@ -274,7 +258,6 @@ telescope.setup({
 })
 telescope.load_extension('fzf')
 telescope.load_extension('fenpoon')
-telescope.load_extension("yank_history")
 
 -- Plugin dev
 local ok, plenary_reload = pcall(require, "plenary.reload")
@@ -362,15 +345,6 @@ nmap_leader("r", "<cmd>Telescope registers<cr>", "Registers")
 nmap_leader("n", "<cmd>Telescope fenpoon<cr>", "Harpoon")
 nmap_leader("N", "<cmd>:lua require('fenpoon.api').mark()<cr>", "Harpoon file")
 nmap_leader("m", "<cmd>Telescope marks<cr>", "Marks")
-
--- Yanky
-nmap_leader('p', '<cmd>Telescope yank_history<cr>', 'Paste')
-vim.keymap.set({ "n", "x" }, "p", "<Plug>(YankyPutAfter)")
-vim.keymap.set({ "n", "x" }, "P", "<Plug>(YankyPutBefore)")
-vim.keymap.set({ "n", "x" }, "gp", "<Plug>(YankyGPutAfter)")
-vim.keymap.set({ "n", "x" }, "gP", "<Plug>(YankyGPutBefore)")
-vim.keymap.set("n", "<c-n>", "<Plug>(YankyCycleForward)")
-vim.keymap.set("n", "<c-p>", "<Plug>(YankyCycleBackward)")
 
 local miniclue = require('mini.clue')
 miniclue.setup({
