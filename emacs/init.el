@@ -20,34 +20,23 @@
   :custom
   (straight-use-package-by-default t))
 
-(use-package which-key) ; Key binding hints
+(use-package which-key :config (which-key-mode)) ; Key binding hints
+(use-package treemacs) ; Filetree
 
-;; Autocomplete + LSP
-(use-package corfu
-    :custom
-    (setq corfu-cycle t
-	corfu-auto t
-	corfu-auto-delay 0.2
-	corfu-quit-at-boundary t))
+;; Finder ??
+(use-package counsel :after ivy :config (counsel-mode)) ; ?
+(use-package ivy :config (ivy-mode)) ; ?
+(use-package all-the-icons-ivy :init (add-hook 'after-init-hook 'all-the-icons-ivy-setup))
 
-(use-package orderless
-  :init
-  (setq completion-styles '(orderless partial-completion basic)
-        completion-category-defaults nil
-        completion-category-overrides nil))
-
-(use-package lsp-mode
-  :config (lsp-enable-which-key-integration t)
-  :custom (lsp-completion-provider :none)
-  :init
-  (defun my/lsp-mode-setup-completion ()
-    (setf (alist-get 'styles (alist-get 'lsp-capf completion-category-defaults))
-          '(orderless))) ;; Configure orderless
-  :hook
-  (lsp-completion-mode . my/lsp-mode-setup-completion))
-
+;; Autocomplete
+(use-package company :config (global-company-mode t))
+;; Lsp
+(use-package lsp-mode :hook ((clojure-mode . lsp)
+                             (lsp-mode . lsp-enable-which-key-integration)))
 (use-package lsp-ui :hook (lsp-mode . lsp-ui-mode))
 (use-package lsp-treemacs :after lsp)
+(use-package lsp-ivy :commands lsp-ivy-workspace-symbol)
+;; Linting
 (use-package flycheck :init (global-flycheck-mode))
 
 ;; Clojure LSP
