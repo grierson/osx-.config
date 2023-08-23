@@ -1,67 +1,86 @@
-(require 'package)
-(add-to-list 'package-archives
-             '("melpa" . "https://melpa.org/packages/"))
-(package-initialize)
+;; Example Elpaca configuration -*- lexical-binding: t; -*-
 
-(unless (package-installed-p 'use-package)
-  (package-refresh-contents)
-  (package-install 'use-package))
-(eval-and-compile
-  (setq use-package-always-ensure t
-        use-package-expand-minimally t))
+(defvar elpaca-installer-version 0.5)
+(defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
+(defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
+(defvar elpaca-repos-directory (expand-file-name "repos/" elpaca-directory))
+(defvar elpaca-order '(elpaca :repo "https://github.com/progfolio/elpaca.git"
+                              :ref nil
+                              :files (:defaults (:exclude "extensions"))
+                              :build (:not elpaca--activate-package)))
+(let* ((repo  (expand-file-name "elpaca/" elpaca-repos-directory))
+       (build (expand-file-name "elpaca/" elpaca-builds-directory))
+       (order (cdr elpaca-order))
+       (default-directory repo))
+  (add-to-list 'load-path (if (file-exists-p build) build repo))
+  (unless (file-exists-p repo)
+    (make-directory repo t)
+    (when (< emacs-major-version 28) (require 'subr-x))
+    (condition-case-unless-debug err
+        (if-let ((buffer (pop-to-buffer-same-window "*elpaca-bootstrap*"))
+                 ((zerop (call-process "git" nil buffer t "clone"
+                                       (plist-get order :repo) repo)))
+                 ((zerop (call-process "git" nil buffer t "checkout"
+                                       (or (plist-get order :ref) "--"))))
+                 (emacs (concat invocation-directory invocation-name))
+                 ((zerop (call-process emacs nil buffer nil "-Q" "-L" "." "--batch"
+                                       "--eval" "(byte-recompile-directory \".\" 0 'force)")))
+                 ((require 'elpaca))
+                 ((elpaca-generate-autoloads "elpaca" repo)))
+            (progn (message "%s" (buffer-string)) (kill-buffer buffer))
+          (error "%s" (with-current-buffer buffer (buffer-string))))
+      ((error) (warn "%s" err) (delete-directory repo 'recursive))))
+  (unless (require 'elpaca-autoloads nil t)
+    (require 'elpaca)
+    (elpaca-generate-autoloads "elpaca" repo)
+    (load "./elpaca-autoloads")))
+(add-hook 'after-init-hook #'elpaca-process-queues)
+(elpaca `(,@elpaca-order))
 
-;; Options
-(setq inhibit-startup-message t)        ; Hide startup
-(menu-bar-mode -1)                      ; Hide File menu
-(global-display-line-numbers-mode)      ; Line numbers
-(global-hl-line-mode t)                 ; Hightlight current line
-(setq ring-bell-function 'ignore)	; silent bell when you make a mistake
-(setq default-fill-column 80)		; toggle wrapping text at the 80th character
-(setq make-backup-files nil)            ; stop creating ~ files
-(set-face-attribute 'default nil :font "JetBrains Mono")
+(elpaca elpaca-use-package
+  (elpaca-use-package-mode)
+  (setq elpaca-use-package-by-default t))
 
-(require 'use-package)
+(elpaca-wait)
 
-(use-package general) ;; Keymap
-(use-package evil :config (evil-mode 1)) ;; Vim keymapping
-(use-package which-key :config (which-key-mode)) ;; Keymapp helper
+;; ---- Start
 
-(use-package helm) ;; ??
-(use-package treemacs) ;; File tree
-(use-package tree-sitter) ;; Colors
-(use-package tree-sitter-langs) ;; Colors
+(use-package evil
+    :init 
+    (setq evil-want-keybinding nil)
+    (evil-mode))
 
-;; LSP
-(use-package lsp-mode
-  :hook ((clojure-mode . lsp)
-         (lsp-mode . lsp-enable-which-key-integration))
-  :commands lsp)
-(use-package lsp-ui :commands lsp-ui-mode)
-(use-package helm-lsp :commands helm-lsp-workspace-symbol)
-(use-package lsp-treemacs :commands lsp-treemacs-errors-list)
+(use-package evil-collection
+    :after evil
+    :config
+    (setq evil-collection-mode-list '(dashboard dired ibuffer))
+    (evil-collection-init))
 
-;; Clojure
-(use-package cider)
+(use-package vertico :init (vertico-mode)) ;; List options
 
-(general-define-key
-    :states '(normal visual insert emacs treemacs)
-    :prefix "SPC"
-    :non-normal-prefix "M-SPC"
-    "t" 'treemacs
-    "/" '(counsel-rg :which-key "ripgrep")
-    "SPC" '(counsel-M-x :which-key "M-x"))
+(use-package orderless
+  :init
+  (setq completion-styles '(orderless basic)
+        completion-category-defaults nil
+        completion-category-overrides '((file (styles partial-completion)))))
 
+(use-package which-key :init (which-key-mode 1))
+(use-package treemacs)
 
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   '(lsp-treemacs helm-lsp lsp-ui lsp-mode which-key vertico stimmung-themes helm general evil-collection counsel)))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
+(use-package general
+  :config
+  (general-evil-setup)
+
+  (general-create-definer leader-key
+    :states '(normal visual emacs)
+    :keymaps 'override
+    :prefix "SPC")
+
+  (leader-key
+    "t" '(treemacs :wk "tree")))
+
+(menu-bar-mode -1)
+(tool-bar-mode -1)
+(scroll-bar-mode -1)
+(global-display-line-numbers-mode t)
+(global-visual-line-mode t)
