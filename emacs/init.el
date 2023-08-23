@@ -1,86 +1,64 @@
-;; Example Elpaca configuration -*- lexical-binding: t; -*-
+;;; packages -- Summary
+;;; Commentary:
 
-(defvar elpaca-installer-version 0.5)
-(defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
-(defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
-(defvar elpaca-repos-directory (expand-file-name "repos/" elpaca-directory))
-(defvar elpaca-order '(elpaca :repo "https://github.com/progfolio/elpaca.git"
-                              :ref nil
-                              :files (:defaults (:exclude "extensions"))
-                              :build (:not elpaca--activate-package)))
-(let* ((repo  (expand-file-name "elpaca/" elpaca-repos-directory))
-       (build (expand-file-name "elpaca/" elpaca-builds-directory))
-       (order (cdr elpaca-order))
-       (default-directory repo))
-  (add-to-list 'load-path (if (file-exists-p build) build repo))
-  (unless (file-exists-p repo)
-    (make-directory repo t)
-    (when (< emacs-major-version 28) (require 'subr-x))
-    (condition-case-unless-debug err
-        (if-let ((buffer (pop-to-buffer-same-window "*elpaca-bootstrap*"))
-                 ((zerop (call-process "git" nil buffer t "clone"
-                                       (plist-get order :repo) repo)))
-                 ((zerop (call-process "git" nil buffer t "checkout"
-                                       (or (plist-get order :ref) "--"))))
-                 (emacs (concat invocation-directory invocation-name))
-                 ((zerop (call-process emacs nil buffer nil "-Q" "-L" "." "--batch"
-                                       "--eval" "(byte-recompile-directory \".\" 0 'force)")))
-                 ((require 'elpaca))
-                 ((elpaca-generate-autoloads "elpaca" repo)))
-            (progn (message "%s" (buffer-string)) (kill-buffer buffer))
-          (error "%s" (with-current-buffer buffer (buffer-string))))
-      ((error) (warn "%s" err) (delete-directory repo 'recursive))))
-  (unless (require 'elpaca-autoloads nil t)
-    (require 'elpaca)
-    (elpaca-generate-autoloads "elpaca" repo)
-    (load "./elpaca-autoloads")))
-(add-hook 'after-init-hook #'elpaca-process-queues)
-(elpaca `(,@elpaca-order))
+;;; Code:
+(defvar bootstrap-version)
+(let ((bootstrap-file
+       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+      (bootstrap-version 5))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
 
-(elpaca elpaca-use-package
-  (elpaca-use-package-mode)
-  (setq elpaca-use-package-by-default t))
+(straight-use-package 'use-package)
+(use-package straight
+  :custom
+  (straight-use-package-by-default t))
 
-(elpaca-wait)
+(use-package which-key) ; Key binding hints
 
-;; ---- Start
-
-(use-package evil
-    :init 
-    (setq evil-want-keybinding nil)
-    (evil-mode))
-
-(use-package evil-collection
-    :after evil
-    :config
-    (setq evil-collection-mode-list '(dashboard dired ibuffer))
-    (evil-collection-init))
-
-(use-package vertico :init (vertico-mode)) ;; List options
+;; Autocomplete + LSP
+(use-package corfu
+    :custom
+    (setq corfu-cycle t
+	corfu-auto t
+	corfu-auto-delay 0.2
+	corfu-quit-at-boundary t))
 
 (use-package orderless
   :init
-  (setq completion-styles '(orderless basic)
+  (setq completion-styles '(orderless partial-completion basic)
         completion-category-defaults nil
-        completion-category-overrides '((file (styles partial-completion)))))
+        completion-category-overrides nil))
 
-(use-package which-key :init (which-key-mode 1))
-(use-package treemacs)
+(use-package lsp-mode
+  :config (lsp-enable-which-key-integration t)
+  :custom (lsp-completion-provider :none)
+  :init
+  (defun my/lsp-mode-setup-completion ()
+    (setf (alist-get 'styles (alist-get 'lsp-capf completion-category-defaults))
+          '(orderless))) ;; Configure orderless
+  :hook
+  (lsp-completion-mode . my/lsp-mode-setup-completion))
 
-(use-package general
-  :config
-  (general-evil-setup)
+(use-package lsp-ui :hook (lsp-mode . lsp-ui-mode))
+(use-package lsp-treemacs :after lsp)
+(use-package flycheck :init (global-flycheck-mode))
 
-  (general-create-definer leader-key
-    :states '(normal visual emacs)
-    :keymaps 'override
-    :prefix "SPC")
+;; Clojure LSP
+(use-package clojure-mode)
+(use-package cider)
+(add-hook 'clojure-mode-hook #'lsp-deferred)
 
-  (leader-key
-    "t" '(treemacs :wk "tree")))
+;; Vi
+(use-package evil :config (evil-mode t))
+(use-package evil-commentary :config (evil-commentary-mode))
+(provide 'init)
+;;; init.el ends here
 
-(menu-bar-mode -1)
-(tool-bar-mode -1)
-(scroll-bar-mode -1)
-(global-display-line-numbers-mode t)
-(global-visual-line-mode t)
+
