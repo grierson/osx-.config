@@ -28,20 +28,18 @@
                     :width 'normal)
 
 
-(use-package which-key :config (which-key-mode)) ; Key binding hints
 (use-package treemacs) ; Filetree
 (use-package magit) ; Git
 
-(use-package vertico :init (vertico-mode)) ;; Minibuf Completion
-(use-package savehist :init (savehist-mode)) ;; Remember Minibuf search
-(use-package marginalia :init (marginalia-mode)) ;; Extra info for Minibuf search results
-
-(use-package orderless ;; Minibuf easier search
+;; Minibuf
+(use-package vertico :init (vertico-mode)) ;; Completion
+(use-package savehist :init (savehist-mode)) ;; Save history
+(use-package marginalia :init (marginalia-mode)) ;; Extra info for search items
+(use-package orderless ;; search allow spaces
   :init
   (setq completion-styles '(orderless basic)
         completion-category-defaults nil
         completion-category-overrides '((file (styles partial-completion)))))
-
 (use-package consult ;; Live preview search
   :hook (completion-list-mode . consult-preview-at-point-mode)
   :init
@@ -51,15 +49,7 @@
         xref-show-definitions-function #'consult-xref))
 
 ;; Autocomplete
-(use-package corfu
-  :custom
-  (corfu-cycle t)                ;; Enable cycling for `corfu-next/previous'
-  (corfu-auto t)                 ;; Enable auto completion
-  (corfu-preview-current nil)    ;; Disable current candidate preview
-  (corfu-preselect 'prompt)      ;; Preselect the prompt
-  :hook ((prog-mode . corfu-mode))
-  :init (global-corfu-mode))
-
+(use-package corfu :init (global-corfu-mode))
 (use-package cape
   :init
   (add-to-list 'completion-at-point-functions #'cape-dabbrev)
@@ -76,11 +66,46 @@
 (use-package cider)
 (add-hook 'clojure-mode-hook #'lsp-deferred)
 
+(use-package paredit
+  :ensure t
+  :init
+  (add-hook 'clojure-mode-hook #'enable-paredit-mode)
+  (add-hook 'cider-repl-mode-hook #'enable-paredit-mode)
+  (add-hook 'emacs-lisp-mode-hook #'enable-paredit-mode)
+  (add-hook 'eval-expression-minibuffer-setup-hook #'enable-paredit-mode)
+  (add-hook 'ielm-mode-hook #'enable-paredit-mode)
+  (add-hook 'lisp-mode-hook #'enable-paredit-mode)
+  (add-hook 'lisp-interaction-mode-hook #'enable-paredit-mode)
+  (add-hook 'scheme-mode-hook #'enable-paredit-mode)
+  :config
+  (show-paren-mode t)
+  :diminish nil)
+
 ;; Vi
 (use-package evil :config (evil-mode t))
 (use-package evil-commentary :config (evil-commentary-mode))
 
-(menu-bar-mode t)
+;; Keymapping
+
+(use-package which-key :config (which-key-mode)) ; Key binding hints
+(use-package general) ; Key binding hints
+
+
+(general-create-definer g/leader
+  :keymaps 'override
+  :states  '(insert emacs normal hybrid motion visual operator)
+  :prefix  "SPC"
+  :non-normal-prefix "S-SPC")
+
+(g/leader
+ :infix "s"
+ "" '(:ignore t :wk "+Search")
+ "f" '(consult-find :wk "File")
+ "g" '(consult-grep :wk "Grep"))
+
+
+(global-hl-line-mode t)
+(setq display-line-numbers 'relative)
 
 (provide 'init)
 ;;; init.el ends here
