@@ -28,10 +28,12 @@
                     :width 'normal)
 
 
+(require 'project)
 (use-package treemacs) ; Filetree
 (use-package magit) ; Git
 
 ;; Minibuf
+(require 'package)
 (use-package vertico :init (vertico-mode)) ;; Completion
 (use-package savehist :init (savehist-mode)) ;; Save history
 (use-package marginalia :init (marginalia-mode)) ;; Extra info for search items
@@ -43,8 +45,7 @@
 (use-package consult ;; Live preview search
   :hook (completion-list-mode . consult-preview-at-point-mode)
   :init
-  (setq register-preview-delay 0.5
-        register-preview-function #'consult-register-format)
+  (setq register-preview-function #'consult-register-format)
   (setq xref-show-xrefs-function #'consult-xref
         xref-show-definitions-function #'consult-xref))
 
@@ -82,26 +83,36 @@
   :diminish nil)
 
 ;; Vi
-(use-package evil :config (evil-mode t))
-(use-package evil-commentary :config (evil-commentary-mode))
+(use-package evil
+  :ensure t
+  :init
+  (setq evil-want-integration t)
+  (setq evil-want-keybinding nil)
+  :config
+  (evil-mode 1))
+(use-package evil-commentary
+  :ensure t
+  :config
+  (evil-commentary-mode 1))
+(use-package evil-collection
+  :after evil
+  :ensure t
+  :config
+  (evil-collection-init))
 
 ;; Keymapping
 
 (use-package which-key :config (which-key-mode)) ; Key binding hints
 (use-package general) ; Key binding hints
 
-
-(general-create-definer g/leader
-  :keymaps 'override
-  :states  '(insert emacs normal hybrid motion visual operator)
-  :prefix  "SPC"
-  :non-normal-prefix "S-SPC")
+(general-create-definer g/leader :prefix "SPC")
 
 (g/leader
- :infix "s"
- "" '(:ignore t :wk "+Search")
- "f" '(consult-find :wk "File")
- "g" '(consult-grep :wk "Grep"))
+  :keymaps 'normal
+  :infix "s"
+  "" '(:ignore t :wk "Search")
+  "f" '(consult-find :wk "File")
+  "g" '(consult-ripgrep :wk "Grep"))
 
 
 (global-hl-line-mode t)
