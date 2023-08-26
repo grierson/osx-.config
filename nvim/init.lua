@@ -2,6 +2,9 @@ vim.g.mapleader = " "
 vim.g.maplocalleader = ","
 vim.cmd.filetype("on")
 vim.cmd.filetype("plugin on")
+vim.g.loaded_netrw = 1
+vim.g.loaded_netrwPlugin = 1
+vim.opt.termguicolors = true
 
 -- Package manager
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
@@ -64,15 +67,7 @@ require("lazy").setup({
 	},
 
 	-- Project tree
-	{
-		"nvim-neo-tree/neo-tree.nvim",
-		branch = "v3.x",
-		dependencies = {
-			"nvim-lua/plenary.nvim",
-			"nvim-tree/nvim-web-devicons",
-			"MunifTanjim/nui.nvim",
-		}
-	},
+	"nvim-tree/nvim-tree.lua",
 
 	-- LSP + Autocomplete
 	"PaterJason/cmp-conjure",
@@ -132,7 +127,7 @@ require('mini.statusline').setup({
 }) -- Status line
 vim.opt.laststatus = 3
 
-require("neo-tree").setup()      -- Project tree
+require("nvim-tree").setup()
 require("todo-comments").setup() -- Highlight TODO: comments
 require("fidget").setup()        -- Progress bar
 require("gitsigns").setup({})    -- Git
@@ -300,8 +295,8 @@ vim.keymap.set('n', '>(', formedit.barf.backward, { desc = "Barf backward" })
 vim.keymap.set('n', '<)', formedit.barf.forward, { desc = "Barf forward" })
 
 -- Project Tree
-nmap_leader('t', '<cmd>Neotree focus<cr>', 'Focus tree')
-nmap_leader('T', '<cmd>Neotree toggle<cr>', 'Toggle tree')
+nmap_leader('t', '<cmd>NvimTreeFocus<cr>', 'Focus tree')
+nmap_leader('T', '<cmd>NvimTreeToggle<cr>', 'Toggle tree')
 
 -- LSP
 nmap_leader("la", "<cmd>lua vim.lsp.buf.code_action()<cr>", "Action")
@@ -311,7 +306,7 @@ nmap_leader("ls", "<cmd>Telescope lsp_document_symbols symbols=function,variable
 nmap_leader("ld", "<cmd>Telescope diagnostics<cr>", "Diagnostic")
 
 -- LSP workspace
-nmap_leader("wf", "<cmd>Neotree reveal<cr>", "File")
+nmap_leader("wf", "<cmd>NvimTreeFindFile<cr>", "File")
 nmap_leader("ws", "<cmd>Telescope lsp_workspace_symbols symbols=function,variable<cr>", "Symbol")
 
 -- Search

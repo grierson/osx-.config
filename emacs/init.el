@@ -73,14 +73,8 @@
   (add-hook 'clojure-mode-hook #'enable-paredit-mode)
   (add-hook 'cider-repl-mode-hook #'enable-paredit-mode)
   (add-hook 'emacs-lisp-mode-hook #'enable-paredit-mode)
-  (add-hook 'eval-expression-minibuffer-setup-hook #'enable-paredit-mode)
-  (add-hook 'ielm-mode-hook #'enable-paredit-mode)
-  (add-hook 'lisp-mode-hook #'enable-paredit-mode)
-  (add-hook 'lisp-interaction-mode-hook #'enable-paredit-mode)
-  (add-hook 'scheme-mode-hook #'enable-paredit-mode)
   :config
-  (show-paren-mode t)
-  :diminish nil)
+  (show-paren-mode t))
 
 ;; Vi
 (use-package evil
@@ -111,8 +105,10 @@
   :keymaps 'normal
   :infix "s"
   "" '(:ignore t :wk "Search")
-  "f" '(consult-find :wk "File")
-  "g" '(consult-ripgrep :wk "Grep"))
+  "f" '(project-find-file :wk "Git File")
+  "F" '(consult-find :wk "File")
+  "g" '(consult-git-grep :wk "Git Grep")
+  "G" '(consult-ripgrep :wk "Grep"))
 
 
 (global-hl-line-mode t)
