@@ -5,6 +5,9 @@ vim.cmd.filetype("plugin on")
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 vim.opt.termguicolors = true
+-- Line numbers
+vim.wo.number = true
+vim.wo.relativenumber = true
 
 -- Package manager
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
@@ -48,8 +51,17 @@ require("lazy").setup({
 	"NoahTheDuke/vim-just",     -- Build tool
 	"tpope/vim-sleuth",         -- Indent
 	"folke/todo-comments.nvim", -- TODO comments
-	"tpope/vim-fugitive",       -- Git manager
-	"lewis6991/gitsigns.nvim",  -- Git gutter + hunks
+	-- Git manager
+	{
+		"NeogitOrg/neogit",
+		dependencies = {
+			"nvim-lua/plenary.nvim",
+			"nvim-telescope/telescope.nvim",
+			"sindrets/diffview.nvim",
+		},
+		config = true
+	},
+	"lewis6991/gitsigns.nvim", -- Git gutter + hunks
 
 	-- Markdown
 	{
@@ -71,7 +83,12 @@ require("lazy").setup({
 
 
 	-- Project tree
-	"nvim-tree/nvim-tree.lua",
+	{
+		"nvim-tree/nvim-tree.lua",
+		dependencies = {
+			"nvim-tree/nvim-web-devicons",
+		},
+	},
 
 	-- LSP + Autocomplete
 	"PaterJason/cmp-conjure",
@@ -120,22 +137,27 @@ require('mini.bracketed').setup()  -- Bracket movement
 require('mini.splitjoin').setup()  -- gS split or join args
 require('mini.starter').setup()    -- Starter screen
 require('mini.sessions').setup()   -- Sessions
+-- Move code
 require('mini.move').setup({
 	mappings = {
 		up = '<S-up>',
 		down = '<S-down>'
 	}
-}) -- Move code
+})
+
+-- Status line
 require('mini.statusline').setup({
 	set_vim_settings = false
-}) -- Status line
+})
 vim.opt.laststatus = 3
 
-require("nvim-tree").setup()
+require("nvim-tree").setup()     -- File tree
 require("todo-comments").setup() -- Highlight TODO: comments
 require("fidget").setup()        -- Progress bar
-require("gitsigns").setup({})    -- Git
+require("neogit").setup({})      -- Git manager
+require("gitsigns").setup({})    -- Git gutter
 
+-- LSP
 local null_ls = require("null-ls")
 
 null_ls.setup({
@@ -146,7 +168,6 @@ null_ls.setup({
 	},
 })
 
--- LSP + Complete
 local lsp = require('lsp-zero').preset({})
 
 lsp.on_attach(function(_, bufnr)
@@ -182,6 +203,7 @@ require('lspconfig').fennel_language_server.setup({
 
 lsp.setup()
 
+-- Completion
 local cmp = require("cmp")
 require("luasnip.loaders.from_vscode").lazy_load()
 
@@ -198,6 +220,7 @@ cmp.setup({
 	}
 })
 
+-- Treesitter
 require("nvim-treesitter.configs").setup({
 	ensure_installed = {
 		"help",
@@ -231,10 +254,10 @@ require("nvim-treesitter.configs").setup({
 	}
 })
 
+-- Telescope
 local telescope = require("telescope")
 local actions = require("telescope.actions")
 telescope.setup({
-	-- Use smart send instead
 	defaults = {
 		mappings = {
 			i = {
@@ -284,8 +307,8 @@ R = function(name)
 	RELOAD(name)
 	return require(name)
 end
--- Plugin dev
 
+-- Keymaps
 local nmap_leader = function(suffix, rhs, desc)
 	vim.keymap.set('n', '<Leader>' .. suffix, rhs, { desc = desc })
 end
