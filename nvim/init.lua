@@ -59,12 +59,16 @@ require("lazy").setup({
 	},
 
 	-- Search
-	"nvim-telescope/telescope.nvim",
+	{
+		"nvim-telescope/telescope.nvim",
+		dependencies = { "nvim-telescope/telescope-live-grep-args.nvim" }
+	},
 	{
 		"nvim-telescope/telescope-fzf-native.nvim", -- Sorting
 		build = "make",
 		lazy = false
 	},
+
 
 	-- Project tree
 	"nvim-tree/nvim-tree.lua",
@@ -249,9 +253,15 @@ telescope.setup({
 				}
 			}
 		}
+	},
+	extensions = {
+		live_grep_args = {
+			auto_quoting = true,
+		}
 	}
 })
 telescope.load_extension('fzf')
+telescope.load_extension('live_grep_args')
 telescope.load_extension('fenpoon')
 
 -- Plugin dev
@@ -313,7 +323,7 @@ nmap_leader("ws", "<cmd>Telescope lsp_workspace_symbols symbols=function,variabl
 nmap_leader("sf", "<cmd>Telescope find_files<cr>", "File")
 nmap_leader("sh", "<cmd>Telescope help_tags<cr>", "Help")
 nmap_leader("sw", "<cmd>Telescope grep_string<cr>", "Word")
-nmap_leader("sg", "<cmd>Telescope live_grep<cr>", "Grep")
+nmap_leader("sg", ":lua require('telescope').extensions.live_grep_args.live_grep_args()<CR>", "Grep")
 nmap_leader("sd", "<cmd>Telescope diagnostic<cr>", "Diagnostics")
 nmap_leader("sn", "<cmd>TodoTelescope<cr>", "Note")
 nmap_leader("sr", "<cmd>Telescope resume<cr>", "Resume")
