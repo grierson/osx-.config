@@ -1,7 +1,7 @@
 # Try to replicate i3wm
 
 # Restart yabai
-cmd + shift - r : yabai --restart-service
+cmd + shift - 0 : yabai --restart-service
 
 # Open term
 cmd - return : kitty -d ~
