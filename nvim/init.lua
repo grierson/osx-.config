@@ -4,7 +4,7 @@ vim.cmd.filetype("on")
 vim.cmd.filetype("plugin on")
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
-vim.opt.termguicolors = true
+
 -- Line numbers
 vim.wo.number = true
 vim.wo.relativenumber = true
@@ -39,18 +39,12 @@ require("lazy").setup({
 		dev = true,
 	},
 
+	-- Theme
 	"p00f/alabaster.nvim",      -- Theme
 	'nvim-treesitter/nvim-treesitter', -- AST
 	'nvim-treesitter/playground', -- View Treesitter AST
 	"HiPhish/nvim-ts-rainbow2", -- Rainbow parens
-	"Olical/conjure",           -- REPL
-	{ "Olical/nfnl", ft = "fennel" }, -- Fennel development
-	"nvim-lua/plenary.nvim",    -- Lots of packages use as dep
-	"echasnovski/mini.nvim",    -- comments, pair, surround, statusline, leap, whichKey
-	"jose-elias-alvarez/null-ls.nvim", -- fnlfmt, mdfmt
-	"NoahTheDuke/vim-just",     -- Build tool
-	"tpope/vim-sleuth",         -- Indent
-	"folke/todo-comments.nvim", -- TODO comments
+
 	-- Git manager
 	{
 		"NeogitOrg/neogit",
@@ -63,17 +57,12 @@ require("lazy").setup({
 	},
 	"lewis6991/gitsigns.nvim", -- Git gutter + hunks
 
-	-- Markdown
-	{
-		"iamcco/markdown-preview.nvim",
-		ft = "markdown",
-		build = ":call mkdp#util#install()",
-	},
-
 	-- Search
 	{
 		"nvim-telescope/telescope.nvim",
-		dependencies = { "nvim-telescope/telescope-live-grep-args.nvim" }
+		dependencies = {
+			"nvim-telescope/telescope-live-grep-args.nvim"
+		}
 	},
 	{
 		"nvim-telescope/telescope-fzf-native.nvim", -- Sorting
@@ -81,13 +70,15 @@ require("lazy").setup({
 		lazy = false
 	},
 
-
 	-- Project tree
 	{
-		"nvim-tree/nvim-tree.lua",
+		"nvim-neo-tree/neo-tree.nvim",
+		branch = "v3.x",
 		dependencies = {
+			"nvim-lua/plenary.nvim",
 			"nvim-tree/nvim-web-devicons",
-		},
+			"MunifTanjim/nui.nvim",
+		}
 	},
 
 	-- LSP + Autocomplete
@@ -108,12 +99,34 @@ require("lazy").setup({
 		}
 	},
 
+
+	-- Basics
+	"echasnovski/mini.nvim", -- comments, pair, surround, statusline, leap, whichKey
+	"tpope/vim-sleuth", -- Indent
+
+	-- Lisp
+	"Olical/conjure",           -- REPL
+	{ "Olical/nfnl", ft = "fennel" }, -- Fennel development
+	"jose-elias-alvarez/null-ls.nvim", -- fnlfmt, mdfmt
+
+	-- Misc
+	"NoahTheDuke/vim-just", -- Build tool
+	"folke/todo-comments.nvim", -- TODO: comments
+	"nvim-lua/plenary.nvim", -- Lots of packages use as dep
+
 	-- Progress bar
 	{
 		"j-hui/fidget.nvim",
 		tag = "legacy",
 		event = "LspAttach",
-	}
+	},
+
+	-- Markdown
+	{
+		"iamcco/markdown-preview.nvim",
+		ft = "markdown",
+		build = ":call mkdp#util#install()",
+	},
 })
 
 vim.o.termguicolors = true
@@ -151,7 +164,7 @@ require('mini.statusline').setup({
 })
 vim.opt.laststatus = 3
 
-require("nvim-tree").setup()     -- File tree
+require("neo-tree").setup()     -- File tree
 require("todo-comments").setup() -- Highlight TODO: comments
 require("fidget").setup()        -- Progress bar
 require("neogit").setup({})      -- Git manager
@@ -328,8 +341,8 @@ vim.keymap.set('n', '>(', formedit.barf.backward, { desc = "Barf backward" })
 vim.keymap.set('n', '<)', formedit.barf.forward, { desc = "Barf forward" })
 
 -- Project Tree
-nmap_leader('t', '<cmd>NvimTreeFocus<cr>', 'Focus tree')
-nmap_leader('T', '<cmd>NvimTreeToggle<cr>', 'Toggle tree')
+nmap_leader('t', '<cmd>Neotree focus<cr>', 'Focus tree')
+nmap_leader('T', '<cmd>Neotree toggle<cr>', 'Toggle tree')
 
 -- Git
 nmap_leader('g', '<cmd>Neogit<cr>', 'Git')
@@ -342,7 +355,7 @@ nmap_leader("ls", "<cmd>Telescope lsp_document_symbols symbols=function,variable
 nmap_leader("ld", "<cmd>Telescope diagnostics<cr>", "Diagnostic")
 
 -- LSP workspace
-nmap_leader("wf", "<cmd>NvimTreeFindFile<cr>", "File")
+nmap_leader("wf", "<cmd>Neotree reveal<cr>", "File")
 nmap_leader("ws", "<cmd>Telescope lsp_workspace_symbols symbols=function,variable<cr>", "Symbol")
 
 -- Search
