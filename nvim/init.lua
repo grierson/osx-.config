@@ -331,6 +331,9 @@ vim.keymap.set('n', '<)', formedit.barf.forward, { desc = "Barf forward" })
 nmap_leader('t', '<cmd>NvimTreeFocus<cr>', 'Focus tree')
 nmap_leader('T', '<cmd>NvimTreeToggle<cr>', 'Toggle tree')
 
+-- Git
+nmap_leader('g', '<cmd>Neogit<cr>', 'Git')
+
 -- LSP
 nmap_leader("la", "<cmd>lua vim.lsp.buf.code_action()<cr>", "Action")
 nmap_leader("lf", "<cmd>lua vim.lsp.buf.format()<cr>", "Format")
@@ -351,6 +354,7 @@ nmap_leader("sd", "<cmd>Telescope diagnostic<cr>", "Diagnostics")
 nmap_leader("sn", "<cmd>TodoTelescope<cr>", "Note")
 nmap_leader("sr", "<cmd>Telescope resume<cr>", "Resume")
 nmap_leader("sq", "<cmd>Telescope quickfix<cr>", "Quickfix")
+nmap_leader("sc", "<cmd>Telescope commands<cr>", "Commands")
 
 -- Git hunks
 nmap_leader("hs", "<cmd>Gitsigns stage_hunk<cr>", "Stage")
