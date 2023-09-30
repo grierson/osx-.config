@@ -145,11 +145,17 @@ require('mini.comment').setup()    -- Comments - gcc
 require('mini.pairs').setup()      -- Auto close
 require('mini.surround').setup()   -- add/change/delete surround
 require('mini.cursorword').setup() -- Highlight current cursorword
-require('mini.jump2d').setup()     -- Quick jump anywhere - <CR> <follow letters>
-require('mini.bracketed').setup()  -- Bracket movement
-require('mini.splitjoin').setup()  -- gS split or join args
-require('mini.starter').setup()    -- Starter screen
-require('mini.sessions').setup()   -- Sessions
+require('mini.jump2d').setup(
+	{
+		mappings = {
+			start_jumping = '',
+		},
+	}
+)                                 -- Quick jump anywhere - <CR> <follow letters>
+require('mini.bracketed').setup() -- Bracket movement
+require('mini.splitjoin').setup() -- gS split or join args
+require('mini.starter').setup()   -- Starter screen
+require('mini.sessions').setup()  -- Sessions
 -- Move code
 require('mini.move').setup({
 	mappings = {
@@ -388,6 +394,9 @@ nmap_leader("Q", "<cmd>:cclose<cr>", "Toggle quickfix")
 nmap_leader("r", "<cmd>Telescope registers<cr>", "Registers")
 
 -- Marks + Fenpoon
+local mini_jump2d = require('mini.jump2d')
+vim.keymap.set({ "n", "v" }, "<cr>", function() return mini_jump2d.start(mini_jump2d.builtin_opts.single_character) end,
+	{})
 nmap_leader("n", "<cmd>Telescope fenpoon<cr>", "Harpoon")
 nmap_leader("N", "<cmd>:lua require('fenpoon.api').mark()<cr>", "Harpoon file")
 nmap_leader("m", "<cmd>Telescope marks<cr>", "Marks")
