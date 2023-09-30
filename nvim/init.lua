@@ -342,8 +342,8 @@ vim.keymap.set('n', '>(', formedit.barf.backward, { desc = "Barf backward" })
 vim.keymap.set('n', '<)', formedit.barf.forward, { desc = "Barf forward" })
 
 -- Project Tree
-nmap_leader('t', '<cmd>Neotree focus<cr>', 'Focus tree')
-nmap_leader('T', '<cmd>Neotree toggle<cr>', 'Toggle tree')
+nmap_leader('t', '<cmd>Neotree focus right<cr>', 'Focus tree')
+nmap_leader('T', '<cmd>Neotree toggle right<cr>', 'Toggle tree')
 
 -- Git
 nmap_leader('g', '<cmd>Neogit<cr>', 'Git')
